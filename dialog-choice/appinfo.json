@@ -1,0 +1,35 @@
+{
+  "uuid": "6cb2d72b-fe27-4a9b-a2d1-7fd37b94326a",
+  "shortName": "dialog-choice",
+  "longName": "dialog-choice",
+  "companyName": "MakeAwesomeHappen",
+  "versionCode": 1,
+  "versionLabel": "1.0",
+  "sdkVersion": "3",
+  "targetPlatforms": ["basalt"],
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": [
+      {
+        "type": "png",
+        "name": "CONFIRM",
+        "file": "images/confirm.png"
+      },
+      {
+        "type": "pbi",
+        "name": "CROSS",
+        "file": "images/cross.png"
+      },
+      {
+        "type": "pbi",
+        "name": "TICK",
+        "file": "images/tick.png"
+      }
+    ]
+  }
+}

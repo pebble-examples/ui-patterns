@@ -1,0 +1,25 @@
+{
+  "uuid": "6cb2d72b-fe27-4a9b-a2d1-7fd37b94326a",
+  "shortName": "dialog-message",
+  "longName": "dialog-message",
+  "companyName": "MakeAwesomeHappen",
+  "versionCode": 1,
+  "versionLabel": "1.0",
+  "sdkVersion": "3",
+  "targetPlatforms": ["aplite", "basalt"],
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": [
+      {
+        "type": "png",
+        "name": "WARNING",
+        "file": "images/warning.png"
+      }
+    ]
+  }
+}
