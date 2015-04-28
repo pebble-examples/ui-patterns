@@ -1,68 +1,59 @@
 /**
- * Example implementation of the checkbox list UI pattern.
+ * Example implementation of the radio button list UI pattern.
  */
 
-#include <pebble.h>
-
-#define NUM_ROWS    4
-#define CELL_HEIGHT 30
-#define BOX_SIZE    12
+#include "radio_button_window.h"
 
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
 
-static GBitmap *s_tick_black_bitmap, *s_tick_white_bitmap;
-static bool s_selections[NUM_ROWS];
+static int s_current_selection = 0;
 
 static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_index, void *context) {
-  return NUM_ROWS + 1;
+  return RADIO_BUTTON_WINDOW_NUM_ROWS + 1;
 }
 
 static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *context) {
-
-  if(cell_index->row == NUM_ROWS) {
-    // Submit item
+  if(cell_index->row == RADIO_BUTTON_WINDOW_NUM_ROWS) {
+    // This is the submit item
     menu_cell_basic_draw(ctx, cell_layer, "Submit", NULL, NULL);
   } else {
-    // Choice item
+    // This is a choice item
     static char s_buff[16];
     snprintf(s_buff, sizeof(s_buff), "Choice %d", (int)cell_index->row);
     menu_cell_basic_draw(ctx, cell_layer, s_buff, NULL, NULL);
 
+    GRect bounds = layer_get_bounds(cell_layer);
+    GPoint p = GPoint(bounds.size.w - (3 * RADIO_BUTTON_WINDOW_RADIO_RADIUS), (bounds.size.h / 2));
+
     // Selected?
-    GBitmap *ptr = s_tick_black_bitmap;
     if(menu_cell_layer_is_highlighted(cell_layer)) {
       graphics_context_set_stroke_color(ctx, GColorWhite);
-      ptr = s_tick_white_bitmap;
+      graphics_context_set_fill_color(ctx, GColorWhite);
+    } else {
+      graphics_context_set_fill_color(ctx, GColorBlack);
     }
 
-    GRect bounds = layer_get_bounds(cell_layer);
-    GRect bitmap_bounds = gbitmap_get_bounds(ptr);
-  
-    // Draw checkbox
-    GRect r = GRect(bounds.size.w - (2 * BOX_SIZE), (bounds.size.h / 2) - (BOX_SIZE / 2), BOX_SIZE, BOX_SIZE);
-    graphics_draw_rect(ctx, r);
-    if(s_selections[cell_index->row]) {
-      graphics_context_set_compositing_mode(ctx, GCompOpSet);
-      graphics_draw_bitmap_in_rect(ctx, ptr, GRect(r.origin.x, r.origin.y - 3, bitmap_bounds.size.w, bitmap_bounds.size.h));
+    // Draw radio filled/empty
+    graphics_draw_circle(ctx, p, RADIO_BUTTON_WINDOW_RADIO_RADIUS);
+    if(cell_index->row == s_current_selection) {
+      // This is the selection
+      graphics_fill_circle(ctx, p, RADIO_BUTTON_WINDOW_RADIO_RADIUS - 3);
     }
   }
 }
 
 static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-  return CELL_HEIGHT;
+  return RADIO_BUTTON_WINDOW_CELL_HEIGHT;
 }
 
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-  if(cell_index->row == NUM_ROWS) {
-    // Do something with choices made
-    for(int i = 0; i < NUM_ROWS; i++) {
-      APP_LOG(APP_LOG_LEVEL_INFO, "Option %d was %s", i, (s_selections[i] ? "selected" : "not selected"));
-    }
+  if(cell_index->row == RADIO_BUTTON_WINDOW_NUM_ROWS) {
+    // Do something with user choice
+    APP_LOG(APP_LOG_LEVEL_INFO, "Submitted choice %d", s_current_selection);
   } else {
-    // Check/uncheck
-    int row = cell_index->row;
-    s_selections[row] = !s_selections[row];
+    // Change selection
+    s_current_selection = cell_index->row;
     menu_layer_reload_data(menu_layer);
   }
 }
@@ -70,9 +61,6 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
-
-  s_tick_black_bitmap = gbitmap_create_with_resource(RESOURCE_ID_TICK_BLACK);
-  s_tick_white_bitmap = gbitmap_create_with_resource(RESOURCE_ID_TICK_WHITE);
 
   s_menu_layer = menu_layer_create(bounds);
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
@@ -88,25 +76,17 @@ static void window_load(Window *window) {
 static void window_unload(Window *window) {
   menu_layer_destroy(s_menu_layer);
 
-  gbitmap_destroy(s_tick_black_bitmap);
-  gbitmap_destroy(s_tick_white_bitmap);
+  window_destroy(window);
+  s_main_window = NULL;
 }
 
-static void init() {
-  s_main_window = window_create();
-  window_set_window_handlers(s_main_window, (WindowHandlers) {
-      .load = window_load,
-      .unload = window_unload,
-  });
+void radio_button_window_push() {
+  if(!s_main_window) {
+    s_main_window = window_create();
+    window_set_window_handlers(s_main_window, (WindowHandlers) {
+        .load = window_load,
+        .unload = window_unload,
+    });
+  }
   window_stack_push(s_main_window, true);
-}
-
-static void deinit() {
-  window_destroy(s_main_window);
-}
-
-int main() {
-  init();
-  app_event_loop();
-  deinit();
 }

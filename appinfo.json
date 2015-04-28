@@ -1,7 +1,7 @@
 {
-  "uuid": "6cb2d72b-fe27-4a9b-a2d1-7fd37b94326a",
-  "shortName": "dialog-choice",
-  "longName": "dialog-choice",
+  "uuid": "5e8eec99-fa47-4edf-997c-e28d9b3c5c35",
+  "shortName": "ui-catalog",
+  "longName": "ui-catalog",
   "companyName": "MakeAwesomeHappen",
   "versionCode": 1,
   "versionLabel": "1.0",
@@ -17,6 +17,16 @@
     "media": [
       {
         "type": "png",
+        "name": "TICK_BLACK",
+        "file": "images/tick_black.png"
+      },
+      {
+        "type": "png",
+        "name": "TICK_WHITE",
+        "file": "images/tick_white.png"
+      },
+      {
+        "type": "png",
         "name": "CONFIRM",
         "file": "images/confirm.png"
       },
@@ -29,6 +39,11 @@
         "type": "pbi",
         "name": "TICK",
         "file": "images/tick.png"
+      },
+      {
+        "type": "png",
+        "name": "WARNING",
+        "file": "images/warning.png"
       }
     ]
   }

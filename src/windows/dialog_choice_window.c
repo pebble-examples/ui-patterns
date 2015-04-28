@@ -2,9 +2,7 @@
  * Example implementation of the dialog choice UI pattern.
  */
 
-#include <pebble.h>
-
-#define MESSAGE  "Set as default?"
+#include "dialog_choice_window.h"
 
 static Window *s_main_window;
 static TextLayer *s_label_layer;
@@ -26,7 +24,7 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, bitmap_layer_get_layer(s_icon_layer));
 
   s_label_layer = text_layer_create(GRect(10, 10 + bitmap_bounds.size.h + 5, 124 - ACTION_BAR_WIDTH, bounds.size.h - (10 + bitmap_bounds.size.h + 15)));
-  text_layer_set_text(s_label_layer, MESSAGE);
+  text_layer_set_text(s_label_layer, DIALOG_CHOICE_WINDOW_MESSAGE);
   text_layer_set_background_color(s_label_layer, GColorClear);
   text_layer_set_text_alignment(s_label_layer, GTextAlignmentCenter);
   text_layer_set_font(s_label_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
@@ -49,24 +47,19 @@ static void window_unload(Window *window) {
   gbitmap_destroy(s_icon_bitmap); 
   gbitmap_destroy(s_tick_bitmap);
   gbitmap_destroy(s_cross_bitmap);
+
+  window_destroy(window);
+  s_main_window = NULL;
 }
 
-static void init() {
-  s_main_window = window_create();
-  window_set_background_color(s_main_window, GColorJaegerGreen);
-  window_set_window_handlers(s_main_window, (WindowHandlers) {
-      .load = window_load,
-      .unload = window_unload,
-  });
+void dialog_choice_window_push() {
+  if(!s_main_window) {
+    s_main_window = window_create();
+    window_set_background_color(s_main_window, GColorJaegerGreen);
+    window_set_window_handlers(s_main_window, (WindowHandlers) {
+        .load = window_load,
+        .unload = window_unload,
+    });
+  }
   window_stack_push(s_main_window, true);
-}
-
-static void deinit() {
-  window_destroy(s_main_window);
-}
-
-int main() {
-  init();
-  app_event_loop();
-  deinit();
 }
