@@ -24,3 +24,7 @@ patterns. Run the app, then choose a menu option to see one of:
 ## List hint message
 
 ![](screenshots/list-message.png)
+
+## PIN entry
+
+![](screenshots/pin/png)
