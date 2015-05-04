@@ -27,4 +27,4 @@ patterns. Run the app, then choose a menu option to see one of:
 
 ## PIN entry
 
-![](screenshots/pin/png)
+![](screenshots/pin.png)
