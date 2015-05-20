@@ -7,8 +7,9 @@
 #include "windows/radio_button_window.h"
 #include "windows/pin_window.h"
 #include "windows/text_animation_window.h"
+#include "windows/progress_bar_window.h"
 
-#define NUM_WINDOWS 7
+#define NUM_WINDOWS 8
 
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
@@ -39,6 +40,10 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
       break;
     case 6:
       menu_cell_basic_draw(ctx, cell_layer, "Text Animation", NULL, NULL);
+      break;
+    case 7:
+      menu_cell_basic_draw(ctx, cell_layer, "Progress Bar", NULL, NULL);
+      break;
     default:
       break;
   }
@@ -70,6 +75,9 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
       break;
     case 6:
       text_animation_window_push();
+      break;
+    case 7:
+      progress_bar_window_push();
       break;
     default:
       break;

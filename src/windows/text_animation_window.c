@@ -95,7 +95,5 @@ void text_animation_window_push() {
   }
   window_stack_push(s_window, true);
 
-  light_enable(true);
-
   animate();
 }
