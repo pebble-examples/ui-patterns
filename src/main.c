@@ -6,7 +6,7 @@
 #include "windows/list_message_window.h"
 #include "windows/radio_button_window.h"
 #include "windows/pin_window.h"
-#include "windows/animation_window.h"
+#include "windows/text_animation_window.h"
 
 #define NUM_WINDOWS 7
 
@@ -69,7 +69,7 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
       pin_window_push();
       break;
     case 6:
-      animation_window_push();
+      text_animation_window_push();
       break;
     default:
       break;
