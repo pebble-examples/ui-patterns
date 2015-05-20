@@ -28,3 +28,11 @@ patterns. Run the app, then choose a menu option to see one of:
 ## PIN entry
 
 ![](screenshots/pin.png)
+
+## Text Animation
+
+![](screenshots/text-change-anim.gif)
+
+## Progress Bar
+
+![](screenshots/progress-bar.gif)
