@@ -6,8 +6,9 @@
 #include "windows/list_message_window.h"
 #include "windows/radio_button_window.h"
 #include "windows/pin_window.h"
+#include "windows/animation_window.h"
 
-#define NUM_WINDOWS 6
+#define NUM_WINDOWS 7
 
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
@@ -36,6 +37,8 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
     case 5: 
       menu_cell_basic_draw(ctx, cell_layer, "PIN Entry", NULL, NULL);
       break;
+    case 6:
+      menu_cell_basic_draw(ctx, cell_layer, "Text Animation", NULL, NULL);
     default:
       break;
   }
@@ -64,6 +67,9 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
       break;
     case 5:
       pin_window_push();
+      break;
+    case 6:
+      animation_window_push();
       break;
     default:
       break;
