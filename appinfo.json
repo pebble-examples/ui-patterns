@@ -1,10 +1,10 @@
 {
   "uuid": "5e8eec99-fa47-4edf-997c-e28d9b3c5c35",
-  "shortName": "ui-catalog",
-  "longName": "ui-catalog",
-  "companyName": "MakeAwesomeHappen",
-  "versionCode": 1,
-  "versionLabel": "1.0",
+  "shortName": "UI Patterns Demo",
+  "longName": "UI Patterns Demo",
+  "companyName": "PebbleDev",
+  "versionCode": 2,
+  "versionLabel": "1.1",
   "sdkVersion": "3",
   "targetPlatforms": ["basalt"],
   "watchapp": {
