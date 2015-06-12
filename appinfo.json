@@ -3,8 +3,8 @@
   "shortName": "UI Patterns Demo",
   "longName": "UI Patterns Demo",
   "companyName": "PebbleDev",
-  "versionCode": 2,
-  "versionLabel": "1.1",
+  "versionCode": 3,
+  "versionLabel": "1.2",
   "sdkVersion": "3",
   "targetPlatforms": ["basalt"],
   "watchapp": {
