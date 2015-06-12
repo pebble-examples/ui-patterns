@@ -36,3 +36,7 @@ patterns. Run the app, then choose a menu option to see one of:
 ## Progress Bar
 
 ![](screenshots/progress-bar.gif)
+
+## Progress Layer
+
+![](screenshots/progresslayer.gif)
