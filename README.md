@@ -15,7 +15,7 @@ patterns. Run the app, then choose a menu option to see one of:
 
 ## Message dialog
 
-![](screenshots/dialog-message.png)
+![](screenshots/dialog-message.gif)
 
 ## Choice dialog
 
