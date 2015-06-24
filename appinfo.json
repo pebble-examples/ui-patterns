@@ -31,12 +31,12 @@
         "file": "images/confirm.png"
       },
       {
-        "type": "pbi",
+        "type": "png",
         "name": "CROSS",
         "file": "images/cross.png"
       },
       {
-        "type": "pbi",
+        "type": "png",
         "name": "TICK",
         "file": "images/tick.png"
       },
