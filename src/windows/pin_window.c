@@ -40,6 +40,9 @@ PinWindow* pin_window_create(PinWindowCallbacks callbacks) {
     pin_window->callbacks = callbacks;
     if (pin_window->window) {
       pin_window->field_selection = 0;
+      for(int i = 0; i < NUM_CELLS; i++) {
+        pin_window->pin.digits[i] = 0;
+      }
       
       // Get window parameters
       Layer *window_layer = window_get_root_layer(pin_window->window);

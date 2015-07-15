@@ -1,3 +1,5 @@
+// Pebble UI component adapted for modular use by Eric Phillips
+
 #include <pebble.h>
 #include "selection_layer.h"
 
