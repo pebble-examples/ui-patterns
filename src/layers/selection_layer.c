@@ -71,7 +71,7 @@ static int prv_get_y_offset_which_vertically_centers_font(GFont font, int height
 static void prv_draw_cell_backgrounds(Layer *layer, GContext *ctx) {
   SelectionLayerData *data = layer_get_data(layer);
   // Loop over each cell and draw the background rectangles
-  for (unsigned i = 0, current_x_offset = 0; i < data->num_cells; i++) {
+  for (int i = 0, current_x_offset = 0; i < data->num_cells; i++) {
     if (data->cell_widths[i] == 0) {
       continue;
     }
@@ -131,7 +131,7 @@ static void prv_draw_slider_slide(Layer *layer, GContext *ctx) {
   SelectionLayerData *data = layer_get_data(layer);
   // Find the active cell's x-offset
   int starting_x_offset = 0;
-  for (unsigned i = 0; i < data->num_cells; i++) {
+  for (int i = 0; i < data->num_cells; i++) {
     if (data->selected_cell_idx == i) {
       break;
     }
@@ -187,7 +187,7 @@ static void prv_draw_slider_settle(Layer *layer, GContext *ctx) {
   SelectionLayerData *data = layer_get_data(layer);
   // Find the active cell's x-offset.
   int starting_x_offset = 0;
-  for (unsigned i = 0; i < data->num_cells; i++) {
+  for (int i = 0; i < data->num_cells; i++) {
     if (data->selected_cell_idx == i) {
       break;
     }
@@ -235,7 +235,7 @@ static void prv_draw_text(Layer *layer, GContext *ctx) {
 
   SelectionLayerData *data = layer_get_data(layer);
   // Loop over each cell and draw the text
-  for (unsigned i = 0, current_x_offset = 0; i < data->num_cells; i++) {
+  for (int i = 0, current_x_offset = 0; i < data->num_cells; i++) {
     if (data->callbacks.get_cell_text) {
       // Potential optimization: cache the cell text somewhere as this function gets called
       // a lot (because of animations). The current users of this modules just call snprintf()
@@ -625,7 +625,7 @@ static void prv_click_config_provider(Layer *layer) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //! API
-Layer* selection_layer_init(SelectionLayerData *selection_layer_, GRect frame, unsigned num_cells) {
+Layer* selection_layer_init(SelectionLayerData *selection_layer_, GRect frame, int num_cells) {
   if (num_cells > MAX_SELECTION_LAYER_CELLS) {
     num_cells = MAX_SELECTION_LAYER_CELLS;
   }
@@ -645,7 +645,7 @@ Layer* selection_layer_init(SelectionLayerData *selection_layer_, GRect frame, u
     .font = fonts_get_system_font(DEFAULT_FONT),
     .is_active = true,
   };
-  for (unsigned i = 0; i < num_cells; i++) {
+  for (int i = 0; i < num_cells; i++) {
     selection_layer_data->cell_widths[i] = 0;
   }
   layer_set_frame(layer, frame);
@@ -660,7 +660,7 @@ Layer* selection_layer_init(SelectionLayerData *selection_layer_, GRect frame, u
   return layer;
 }
 
-Layer* selection_layer_create(GRect frame, unsigned num_cells) {
+Layer* selection_layer_create(GRect frame, int num_cells) {
   SelectionLayerData *selection_layer_data = NULL;
   Layer *layer = selection_layer_init(selection_layer_data, frame, num_cells);
   return layer;
@@ -686,7 +686,7 @@ void selection_layer_destroy(Layer* layer) {
   }
 }
 
-void selection_layer_set_cell_width(Layer *layer, unsigned idx, unsigned width) {
+void selection_layer_set_cell_width(Layer *layer, int idx, int width) {
   SelectionLayerData *data = layer_get_data(layer);
   if (data && idx < data->num_cells) {
     data->cell_widths[idx] = width;
@@ -717,7 +717,7 @@ void selection_layer_set_active_bg_color(Layer *layer, GColor color) {
   }
 }
 
-void selection_layer_set_cell_padding(Layer *layer, unsigned padding) {
+void selection_layer_set_cell_padding(Layer *layer, int padding) {
   SelectionLayerData *data = layer_get_data(layer);
   if (data) {
     data->cell_padding = padding;

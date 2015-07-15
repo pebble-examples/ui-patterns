@@ -1,110 +1,136 @@
-/**
- * Example implementation of the 'value selection field' UI pattern
- */
-
+#include <pebble.h>
 #include "pin_window.h"
+#include "../layers/selection_layer.h"
 
-static Window *s_main_window;
-static TextLayer *s_hint_layer;
-static TextLayer *s_number_layers[4];
+static char* selection_handle_get_text(int index, void *context) {
+  PinWindow *pin_window = (PinWindow*)context;
+  snprintf(
+    pin_window->field_buffs[index], 
+    sizeof(pin_window->field_buffs[0]), "%d",
+    (int)pin_window->pin.digits[index]
+  );
+  return pin_window->field_buffs[index];
+}
 
-static PIN pin;
+static void selection_handle_complete(void *context) {
+  PinWindow *pin_window = (PinWindow*)context;
+  pin_window->callbacks.pin_complete(pin_window->pin, pin_window);
+}
 
-static char s_value_buffers[4][2];
-static int s_selection;
-
-static void update_ui() {
-  for(int i = 0; i < 4; i++) {
-    text_layer_set_background_color(s_number_layers[i], (i == s_selection) ? GColorJaegerGreen : GColorDarkGray);
-    snprintf(s_value_buffers[i], sizeof("0"), "%d", pin.digits[i]);
-    text_layer_set_text(s_number_layers[i], s_value_buffers[i]);
+static void selection_handle_inc(int index, uint8_t clicks, void *context) {
+  PinWindow *pin_window = (PinWindow*)context;
+  pin_window->pin.digits[index]++;
+  if(pin_window->pin.digits[index] > MAX_VALUE) {
+    pin_window->pin.digits[index] = 0;
   }
 }
 
-static void init() {
-  // Reset to initial selection
-  s_selection = 0;
-  for(int i = 0; i < 4; i++) {
-    pin.digits[i] = 0;
-  }
-
-  update_ui();
-}
-
-static void select_click_handler(ClickRecognizerRef recognizer, void *context) {
-  // Next column
-  s_selection += 1;
-
-  if(s_selection == 4) {
-    // Confirm. Do something with pin, or pass it elsewhere
-    APP_LOG(APP_LOG_LEVEL_INFO, "User pin is %d%d%d%d", 
-      pin.digits[0], pin.digits[1], pin.digits[2], pin.digits[3]);
-
-    window_stack_pop(true);
-  }
-
-  update_ui();
-}
-
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  pin.digits[s_selection] += (pin.digits[s_selection] == 9) ? -9 : 1;
-
-  update_ui();
-}
-
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  pin.digits[s_selection] -= (pin.digits[s_selection] == 0) ? -9 : 1;
-
-  update_ui();
-}
-
-static void click_config_provider(void *context) {
-  window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
-  window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
-  window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
-}
-
-static void window_load(Window *window) {
-  Layer *window_layer = window_get_root_layer(window);
-  GRect bounds = layer_get_bounds(window_layer);
-
-  s_hint_layer = text_layer_create(GRect(0, 20, 144, 40));
-  text_layer_set_text(s_hint_layer, "Enter PIN");
-  text_layer_set_text_alignment(s_hint_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_hint_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  layer_add_child(window_layer, text_layer_get_layer(s_hint_layer));
-
-  for(int i = 0; i < 4; i++) {
-    s_number_layers[i] = text_layer_create(GRect(i * (PIN_WINDOW_SPACING + PIN_WINDOW_SPACING), 60, 30, 40));
-    text_layer_set_text_color(s_number_layers[i], GColorWhite);
-    text_layer_set_background_color(s_number_layers[i], GColorDarkGray);
-    text_layer_set_text(s_number_layers[i], "0");
-    text_layer_set_font(s_number_layers[i], fonts_get_system_font(FONT_KEY_LECO_32_BOLD_NUMBERS));
-    text_layer_set_text_alignment(s_number_layers[i], GTextAlignmentCenter);
-    layer_add_child(window_layer, text_layer_get_layer(s_number_layers[i]));
+static void selection_handle_dec(int index, uint8_t clicks, void *context) {
+  PinWindow *pin_window = (PinWindow*)context;
+  pin_window->pin.digits[index]--;
+  if(pin_window->pin.digits[index] < 0) {
+    pin_window->pin.digits[index] = MAX_VALUE;
   }
 }
 
-static void window_unload(Window *window) {
-  for(int i = 0; i < 4; i++) {
-    text_layer_destroy(s_number_layers[i]);
-  }
-  text_layer_destroy(s_hint_layer);
+PinWindow* pin_window_create(PinWindowCallbacks callbacks) {
+  PinWindow *pin_window = (PinWindow*)malloc(sizeof(PinWindow));
+  if (pin_window) {
+    pin_window->window = window_create();
+    pin_window->callbacks = callbacks;
+    if (pin_window->window) {
+      pin_window->field_selection = 0;
+      
+      // Get window parameters
+      Layer *window_layer = window_get_root_layer(pin_window->window);
+      GRect bounds = layer_get_bounds(window_layer);
+      
+      // Main TextLayer
+#ifdef PBL_SDK_3
+      pin_window->main_text = text_layer_create(GRect(0, 30, bounds.size.w, 40));
+#else
+      pin_window->main_text = text_layer_create(GRect(0, 15, bounds.size.w, 40));
+#endif
+      text_layer_set_text(pin_window->main_text, "PIN Required");
+      text_layer_set_font(pin_window->main_text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+      text_layer_set_text_alignment(pin_window->main_text, GTextAlignmentCenter);
+      layer_add_child(window_layer, text_layer_get_layer(pin_window->main_text));
+      
+      // Sub TextLayer
+#ifdef PBL_SDK_3
+      pin_window->sub_text = text_layer_create(GRect(1, 125, bounds.size.w, 40));
+#else
+      pin_window->sub_text = text_layer_create(GRect(1, 110, bounds.size.w, 40));
+#endif
+      text_layer_set_text(pin_window->sub_text, "Enter your PIN to continue");
+      text_layer_set_text_alignment(pin_window->sub_text, GTextAlignmentCenter);
+      text_layer_set_font(pin_window->sub_text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+      layer_add_child(window_layer, text_layer_get_layer(pin_window->sub_text));
+      
+      // Create selection layer
+#ifdef PBL_SDK_3
+      pin_window->selection = selection_layer_create(GRect(8, 75, 128, 34), NUM_CELLS);
+#else
+      pin_window->selection = selection_layer_create(GRect(8, 60, 128, 34), NUM_CELLS);
+#endif
+      for (int i = 0; i < NUM_CELLS; i++) {
+        selection_layer_set_cell_width(pin_window->selection, i, 40);
+      }
+      selection_layer_set_cell_padding(pin_window->selection, 4);
+#ifdef PBL_COLOR
+      selection_layer_set_active_bg_color(pin_window->selection, GColorRed);
+      selection_layer_set_inactive_bg_color(pin_window->selection, GColorDarkGray);
+#endif
+      selection_layer_set_click_config_onto_window(pin_window->selection, pin_window->window);
+      selection_layer_set_callbacks(pin_window->selection, pin_window, (SelectionLayerCallbacks) {
+        .get_cell_text = selection_handle_get_text,
+        .complete = selection_handle_complete,
+        .increment = selection_handle_inc,
+        .decrement = selection_handle_dec,
+      });
+      layer_add_child(window_get_root_layer(pin_window->window), pin_window->selection);
 
-  window_destroy(window);
-  s_main_window = NULL;
+#ifdef PBL_SDK_3
+      // Create status bar
+      pin_window->status = status_bar_layer_create();
+      status_bar_layer_set_colors(pin_window->status, GColorClear, GColorBlack);
+      layer_add_child(window_layer, status_bar_layer_get_layer(pin_window->status));
+#endif
+      return pin_window;
+    }
+  }
+
+  APP_LOG(APP_LOG_LEVEL_ERROR, "Failed to create PinWindow");
+  return NULL;
 }
 
-void pin_window_push() {
-  if(!s_main_window) {
-    s_main_window = window_create();
-    window_set_click_config_provider(s_main_window, click_config_provider);
-    window_set_window_handlers(s_main_window, (WindowHandlers) {
-        .load = window_load,
-        .unload = window_unload,
-    });
+void pin_window_destroy(PinWindow *pin_window) {
+  if (pin_window) {
+#ifdef PBL_SDK_3
+    status_bar_layer_destroy(pin_window->status);
+#endif
+    selection_layer_destroy(pin_window->selection);
+    text_layer_destroy(pin_window->sub_text);
+    text_layer_destroy(pin_window->main_text);
+    free(pin_window);
+    pin_window = NULL;
+    return;
   }
-  window_stack_push(s_main_window, true);
+}
 
-  init();
+void pin_window_push(PinWindow *pin_window, bool animated) {
+  window_stack_push(pin_window->window, animated);
+}
+
+void pin_window_pop(PinWindow *pin_window, bool animated) {
+  window_stack_remove(pin_window->window, animated);
+}
+
+bool pin_window_get_topmost_window(PinWindow *pin_window) {
+  return window_stack_get_top_window() == pin_window->window;
+}
+
+void pin_window_set_highlight_color(PinWindow *pin_window, GColor color) {
+  pin_window->highlight_color = color;
+  selection_layer_set_active_bg_color(pin_window->selection, color);
 }

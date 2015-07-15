@@ -57,6 +57,10 @@ static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex 
   return CHECKBOX_WINDOW_CELL_HEIGHT;
 }
 
+static void pin_complete_callback(PIN pin, void *context) {
+
+}
+
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
   switch(cell_index->row) {
     case 0:
@@ -74,8 +78,12 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
     case 4:
       radio_button_window_push();
       break;
-    case 5:
-      pin_window_push();
+    case 5: {
+        PinWindow *pin_window = pin_window_create((PinWindowCallbacks) {
+          .pin_complete = pin_complete_callback
+        });
+        pin_window_push(pin_window, true);
+      }
       break;
     case 6:
       text_animation_window_push();
