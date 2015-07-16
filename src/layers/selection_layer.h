@@ -1,16 +1,16 @@
 #pragma once
 
-#include "pebble.h"
+#include <pebble.h>
 
 #define MAX_SELECTION_LAYER_CELLS 3
 
-typedef char* (*SelectionLayerGetCellText)(int index, void *callback_context);
+typedef char* (*SelectionLayerGetCellText)(int index, void *context);
 
-typedef void (*SelectionLayerCompleteCallback)(void *callback_context);
+typedef void (*SelectionLayerCompleteCallback)(void *context);
 
-typedef void (*SelectionLayerIncrementCallback)(int selected_cell_idx, uint8_t reapeating_count, void *callback_context);
+typedef void (*SelectionLayerIncrementCallback)(int selected_cell_idx, uint8_t reapeating_count, void *context);
 
-typedef void (*SelectionLayerDecrementCallback)(int selected_cell_idx, uint8_t reapeating_count, void *callback_context);
+typedef void (*SelectionLayerDecrementCallback)(int selected_cell_idx, uint8_t reapeating_count, void *context);
 
 typedef struct SelectionLayerCallbacks {
   SelectionLayerGetCellText get_cell_text;
@@ -20,7 +20,6 @@ typedef struct SelectionLayerCallbacks {
 } SelectionLayerCallbacks;
 
 typedef struct SelectionLayerData {
-  //Layer *layer;
 #ifndef PBL_COLOR
   InverterLayer *inverter;
 #endif
@@ -37,7 +36,7 @@ typedef struct SelectionLayerData {
   GColor active_background_color;
 
   SelectionLayerCallbacks callbacks;
-  void *callback_context;
+  void *context;
 
   // Animation stuff
   Animation *value_change_animation;
@@ -55,11 +54,7 @@ typedef struct SelectionLayerData {
   AnimationImplementation slide_settle_anim_impl;
 } SelectionLayerData;
 
-Layer* selection_layer_init(SelectionLayerData *selection_layer_data, GRect frame, int num_cells);
-
 Layer* selection_layer_create(GRect frame, int num_cells);
-
-void selection_layer_deinit(Layer* layer);
 
 void selection_layer_destroy(Layer* layer);
 
@@ -78,4 +73,4 @@ void selection_layer_set_active(Layer *layer, bool is_active);
 
 void selection_layer_set_click_config_onto_window(Layer *layer, struct Window *window);
 
-void selection_layer_set_callbacks(Layer *layer, void *callback_context, SelectionLayerCallbacks callbacks);
+void selection_layer_set_callbacks(Layer *layer, void *context, SelectionLayerCallbacks callbacks);
