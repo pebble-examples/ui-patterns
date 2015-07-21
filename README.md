@@ -40,3 +40,7 @@ patterns. Run the app, then choose a menu option to see one of:
 ## Progress Layer
 
 ![](screenshots/progresslayer.gif)
+
+## Config Dialog Window
+
+![](screenshots/config-window.png)

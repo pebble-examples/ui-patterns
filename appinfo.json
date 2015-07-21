@@ -3,8 +3,8 @@
   "shortName": "UI Patterns Demo",
   "longName": "UI Patterns Demo",
   "companyName": "PebbleDev",
-  "versionCode": 3,
-  "versionLabel": "1.2",
+  "versionCode": 4,
+  "versionLabel": "1.3",
   "sdkVersion": "3",
   "targetPlatforms": ["basalt"],
   "watchapp": {
@@ -44,6 +44,11 @@
         "type": "png",
         "name": "WARNING",
         "file": "images/warning.png"
+      },
+      {
+        "type": "png",
+        "name": "CONFIG_REQUIRED",
+        "file": "images/config-required.png"
       }
     ]
   }

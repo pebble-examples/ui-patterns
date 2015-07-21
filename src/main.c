@@ -9,8 +9,9 @@
 #include "windows/text_animation_window.h"
 #include "windows/progress_bar_window.h"
 #include "windows/progress_layer_window.h"
+#include "windows/dialog_config_window.h"
 
-#define NUM_WINDOWS 9
+#define NUM_WINDOWS 10
 
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
@@ -47,6 +48,9 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
       break;
     case 8:
       menu_cell_basic_draw(ctx, cell_layer, "Progress Layer", NULL, NULL);
+      break;
+    case 9:
+      menu_cell_basic_draw(ctx, cell_layer, "App Config Prompt", NULL, NULL);
       break;
     default:
       break;
@@ -94,6 +98,9 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
       break;
     case 8:
       progress_layer_window_push();
+      break;
+    case 9:
+      dialog_config_window_push();
       break;
     default:
       break;
