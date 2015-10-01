@@ -20,9 +20,7 @@ typedef struct {
   TextLayer *main_text, *sub_text;
   Layer *selection;
   GColor highlight_color;
-#ifdef PBL_SDK_3
   StatusBarLayer *status;
-#endif
   PinWindowCallbacks callbacks;
 
   PIN pin;

@@ -49,41 +49,27 @@ PinWindow* pin_window_create(PinWindowCallbacks callbacks) {
       GRect bounds = layer_get_bounds(window_layer);
       
       // Main TextLayer
-#ifdef PBL_SDK_3
       pin_window->main_text = text_layer_create(GRect(0, 30, bounds.size.w, 40));
-#else
-      pin_window->main_text = text_layer_create(GRect(0, 15, bounds.size.w, 40));
-#endif
       text_layer_set_text(pin_window->main_text, "PIN Required");
       text_layer_set_font(pin_window->main_text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
       text_layer_set_text_alignment(pin_window->main_text, GTextAlignmentCenter);
       layer_add_child(window_layer, text_layer_get_layer(pin_window->main_text));
       
       // Sub TextLayer
-#ifdef PBL_SDK_3
       pin_window->sub_text = text_layer_create(GRect(1, 125, bounds.size.w, 40));
-#else
-      pin_window->sub_text = text_layer_create(GRect(1, 110, bounds.size.w, 40));
-#endif
       text_layer_set_text(pin_window->sub_text, "Enter your PIN to continue");
       text_layer_set_text_alignment(pin_window->sub_text, GTextAlignmentCenter);
       text_layer_set_font(pin_window->sub_text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
       layer_add_child(window_layer, text_layer_get_layer(pin_window->sub_text));
       
       // Create selection layer
-#ifdef PBL_SDK_3
       pin_window->selection = selection_layer_create(GRect(8, 75, 128, 34), NUM_CELLS);
-#else
-      pin_window->selection = selection_layer_create(GRect(8, 60, 128, 34), NUM_CELLS);
-#endif
       for (int i = 0; i < NUM_CELLS; i++) {
         selection_layer_set_cell_width(pin_window->selection, i, 40);
       }
       selection_layer_set_cell_padding(pin_window->selection, 4);
-#ifdef PBL_COLOR
       selection_layer_set_active_bg_color(pin_window->selection, GColorRed);
       selection_layer_set_inactive_bg_color(pin_window->selection, GColorDarkGray);
-#endif
       selection_layer_set_click_config_onto_window(pin_window->selection, pin_window->window);
       selection_layer_set_callbacks(pin_window->selection, pin_window, (SelectionLayerCallbacks) {
         .get_cell_text = selection_handle_get_text,
@@ -93,12 +79,10 @@ PinWindow* pin_window_create(PinWindowCallbacks callbacks) {
       });
       layer_add_child(window_get_root_layer(pin_window->window), pin_window->selection);
 
-#ifdef PBL_SDK_3
       // Create status bar
       pin_window->status = status_bar_layer_create();
       status_bar_layer_set_colors(pin_window->status, GColorClear, GColorBlack);
       layer_add_child(window_layer, status_bar_layer_get_layer(pin_window->status));
-#endif
       return pin_window;
     }
   }
@@ -109,9 +93,7 @@ PinWindow* pin_window_create(PinWindowCallbacks callbacks) {
 
 void pin_window_destroy(PinWindow *pin_window) {
   if (pin_window) {
-#ifdef PBL_SDK_3
     status_bar_layer_destroy(pin_window->status);
-#endif
     selection_layer_destroy(pin_window->selection);
     text_layer_destroy(pin_window->sub_text);
     text_layer_destroy(pin_window->main_text);
