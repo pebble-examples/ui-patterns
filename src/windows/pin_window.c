@@ -2,6 +2,8 @@
 #include "pin_window.h"
 #include "../layers/selection_layer.h"
 
+#define PIN_WINDOW_SIZE GSize(128, 34)
+
 static char* selection_handle_get_text(int index, void *context) {
   PinWindow *pin_window = (PinWindow*)context;
   snprintf(
@@ -49,21 +51,21 @@ PinWindow* pin_window_create(PinWindowCallbacks callbacks) {
       GRect bounds = layer_get_bounds(window_layer);
       
       // Main TextLayer
-      pin_window->main_text = text_layer_create(GRect(0, 30, bounds.size.w, 40));
+      pin_window->main_text = text_layer_create(GRect(bounds.origin.x, 30, bounds.size.w, 40));
       text_layer_set_text(pin_window->main_text, "PIN Required");
       text_layer_set_font(pin_window->main_text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
       text_layer_set_text_alignment(pin_window->main_text, GTextAlignmentCenter);
       layer_add_child(window_layer, text_layer_get_layer(pin_window->main_text));
       
       // Sub TextLayer
-      pin_window->sub_text = text_layer_create(GRect(1, 125, bounds.size.w, 40));
+      pin_window->sub_text = text_layer_create(GRect(bounds.origin.x + 10, 125, bounds.size.w - 20, 40));
       text_layer_set_text(pin_window->sub_text, "Enter your PIN to continue");
       text_layer_set_text_alignment(pin_window->sub_text, GTextAlignmentCenter);
       text_layer_set_font(pin_window->sub_text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
       layer_add_child(window_layer, text_layer_get_layer(pin_window->sub_text));
       
       // Create selection layer
-      pin_window->selection = selection_layer_create(GRect(8, 75, 128, 34), NUM_CELLS);
+      pin_window->selection = selection_layer_create(GRect((bounds.size.w - PIN_WINDOW_SIZE.w) / 2, 75, PIN_WINDOW_SIZE.w, PIN_WINDOW_SIZE.h), NUM_CELLS);
       for (int i = 0; i < NUM_CELLS; i++) {
         selection_layer_set_cell_width(pin_window->selection, i, 40);
       }
