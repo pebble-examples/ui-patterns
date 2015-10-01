@@ -4,6 +4,9 @@
 
 #include "radio_button_window.h"
 
+#include "../values.h"
+#include "../util.h"
+
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
 
@@ -43,14 +46,20 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
   }
 }
 
-static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
+static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
+#ifdef PBL_ROUND
+  return menu_layer_menu_index_selected(menu_layer, cell_index) ? 
+    FOCUSED_TALL_CELL_HEIGHT : UNFOCUSED_TALL_CELL_HEIGHT;
+#else
   return RADIO_BUTTON_WINDOW_CELL_HEIGHT;
+#endif
 }
 
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
   if(cell_index->row == RADIO_BUTTON_WINDOW_NUM_ROWS) {
     // Do something with user choice
     APP_LOG(APP_LOG_LEVEL_INFO, "Submitted choice %d", s_current_selection);
+    window_stack_pop(true);
   } else {
     // Change selection
     s_current_selection = cell_index->row;
@@ -64,6 +73,7 @@ static void window_load(Window *window) {
 
   s_menu_layer = menu_layer_create(bounds);
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
+  menu_layer_set_center_focused(s_menu_layer, PBL_IF_ROUND_ELSE(true, false));
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
       .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)get_num_rows_callback,
       .draw_row = (MenuLayerDrawRowCallback)draw_row_callback,

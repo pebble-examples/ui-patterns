@@ -66,7 +66,7 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
     for(int i = 0; i < CHECKBOX_WINDOW_NUM_ROWS; i++) {
       APP_LOG(APP_LOG_LEVEL_INFO, "Option %d was %s", i, (s_selections[i] ? "selected" : "not selected"));
     }
-    window_stack_pop(false);
+    window_stack_pop(true);
   } else {
     // Check/uncheck
     int row = cell_index->row;
@@ -84,8 +84,6 @@ static void window_load(Window *window) {
 
   s_menu_layer = menu_layer_create(bounds);
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
-  menu_layer_set_normal_colors(s_menu_layer, GColorBlack, GColorWhite);
-  menu_layer_set_highlight_colors(s_menu_layer, GColorBlue, GColorWhite);
   menu_layer_set_center_focused(s_menu_layer, PBL_IF_ROUND_ELSE(true, false));
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
       .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)get_num_rows_callback,
