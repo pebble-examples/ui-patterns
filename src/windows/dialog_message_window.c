@@ -4,6 +4,8 @@
 
 #include "windows/dialog_message_window.h"
 
+#define MARGIN 10
+
 static Window *s_main_window;
 static TextLayer *s_label_layer;
 static BitmapLayer *s_icon_layer;
@@ -26,21 +28,25 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  s_background_layer = layer_create(GRect(0, 168, bounds.size.w, bounds.size.h));
+  s_background_layer = layer_create(GRect(0, bounds.size.h, bounds.size.w, bounds.size.h));
   layer_set_update_proc(s_background_layer, background_update_proc);
   layer_add_child(window_layer, s_background_layer);
 
   s_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_WARNING);
   GRect bitmap_bounds = gbitmap_get_bounds(s_icon_bitmap);
 
-  s_icon_layer = bitmap_layer_create(GRect(10, 168 + 10, bitmap_bounds.size.w, bitmap_bounds.size.h));
+  s_icon_layer = bitmap_layer_create(PBL_IF_ROUND_ELSE(
+      GRect((bounds.size.w - bitmap_bounds.size.w) / 2, bounds.size.h + MARGIN, bitmap_bounds.size.w, bitmap_bounds.size.h),
+      GRect(MARGIN, bounds.size.h + MARGIN, bitmap_bounds.size.w, bitmap_bounds.size.h)
+  ));
   bitmap_layer_set_bitmap(s_icon_layer, s_icon_bitmap);
   bitmap_layer_set_compositing_mode(s_icon_layer, GCompOpSet);
   layer_add_child(window_layer, bitmap_layer_get_layer(s_icon_layer));
 
-  s_label_layer = text_layer_create(GRect(10, 168 + 10 + bitmap_bounds.size.h + 5, 124, 168 - (10 + bitmap_bounds.size.h + 10)));
+  s_label_layer = text_layer_create(GRect(MARGIN, bounds.size.h + MARGIN + bitmap_bounds.size.h, bounds.size.w - (2 * MARGIN), bounds.size.h));
   text_layer_set_text(s_label_layer, DIALOG_MESSAGE_WINDOW_MESSAGE);
   text_layer_set_background_color(s_label_layer, GColorClear);
+  text_layer_set_text_alignment(s_label_layer, PBL_IF_ROUND_ELSE(GTextAlignmentCenter, GTextAlignmentLeft));
   text_layer_set_font(s_label_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   layer_add_child(window_layer, text_layer_get_layer(s_label_layer));
 }
@@ -74,11 +80,14 @@ static void window_appear(Window *window) {
   Animation *background_anim = (Animation*)property_animation_create_layer_frame(s_background_layer, &start, &finish);
 
   start = layer_get_frame(icon_layer);
-  finish = GRect(10, 10, bitmap_bounds.size.w, bitmap_bounds.size.h);
+  finish = PBL_IF_ROUND_ELSE(
+      GRect((bounds.size.w - bitmap_bounds.size.w) / 2, MARGIN, bitmap_bounds.size.w, bitmap_bounds.size.h),
+      GRect(MARGIN, MARGIN, bitmap_bounds.size.w, bitmap_bounds.size.h
+  ));
   Animation *icon_anim = (Animation*)property_animation_create_layer_frame(icon_layer, &start, &finish);
 
   start = layer_get_frame(label_layer);
-  finish = GRect(10, 10 + bitmap_bounds.size.h + 5, 124, 168 - (10 + bitmap_bounds.size.h + 10));
+  finish = GRect(MARGIN, MARGIN + bitmap_bounds.size.h + 5, bounds.size.w - (2 * MARGIN), bounds.size.h);
   Animation *label_anim = (Animation*)property_animation_create_layer_frame(label_layer, &start, &finish);
 
   s_appear_anim = animation_spawn_create(background_anim, icon_anim, label_anim, NULL);
@@ -92,6 +101,7 @@ static void window_appear(Window *window) {
 void dialog_message_window_push() {
   if(!s_main_window) {
     s_main_window = window_create();
+    window_set_background_color(s_main_window, GColorBlack);
     window_set_window_handlers(s_main_window, (WindowHandlers) {
         .load = window_load,
         .unload = window_unload,
