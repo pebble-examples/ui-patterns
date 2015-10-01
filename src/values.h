@@ -1,0 +1,4 @@
+#pragma once
+
+#define FOCUSED_TALL_CELL_HEIGHT   60
+#define UNFOCUSED_TALL_CELL_HEIGHT 30

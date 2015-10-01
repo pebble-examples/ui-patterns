@@ -1,5 +1,8 @@
 #include <pebble.h>
 
+#include "values.h"
+#include "util.h"
+
 #include "windows/checkbox_window.h"
 #include "windows/dialog_choice_window.h"
 #include "windows/dialog_message_window.h"
@@ -11,9 +14,7 @@
 #include "windows/progress_layer_window.h"
 #include "windows/dialog_config_window.h"
 
-#define NUM_WINDOWS                10
-#define FOCUSED_TALL_CELL_HEIGHT   60
-#define UNFOCUSED_TALL_CELL_HEIGHT 30
+#define NUM_WINDOWS 10
 
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
@@ -61,9 +62,7 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
 
 static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
 #ifdef PBL_ROUND
-  MenuIndex selected = menu_layer_get_selected_index(menu_layer);
-  return selected.row == cell_index->row && selected.section == cell_index->section ? 
-    FOCUSED_TALL_CELL_HEIGHT : UNFOCUSED_TALL_CELL_HEIGHT;
+  return menu_layer_menu_index_selected(menu_layer, cell_index) ? FOCUSED_TALL_CELL_HEIGHT : UNFOCUSED_TALL_CELL_HEIGHT;
 #else
   return 44;
 #endif
@@ -122,6 +121,8 @@ static void window_load(Window *window) {
   s_menu_layer = menu_layer_create(bounds);
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
   menu_layer_set_center_focused(s_menu_layer, PBL_IF_ROUND_ELSE(true, false));
+  menu_layer_set_normal_colors(s_menu_layer, GColorBlack, GColorWhite);
+  menu_layer_set_highlight_colors(s_menu_layer, GColorRed, GColorWhite);
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
       .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)get_num_rows_callback,
       .draw_row = (MenuLayerDrawRowCallback)draw_row_callback,
