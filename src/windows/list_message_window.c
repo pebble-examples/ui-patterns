@@ -4,6 +4,9 @@
 
 #include "list_message_window.h"
 
+#include "../values.h"
+#include "../util.h"
+
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
 static TextLayer *s_list_message_layer;
@@ -18,16 +21,22 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
   menu_cell_basic_draw(ctx, cell_layer, s_buff, NULL, NULL);
 }
 
-static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
+static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
+#ifdef PBL_ROUND
+  return menu_layer_menu_index_selected(menu_layer, cell_index) ? 
+    FOCUSED_TALL_CELL_HEIGHT : UNFOCUSED_TALL_CELL_HEIGHT;
+#else
   return LIST_MESSAGE_WINDOW_CELL_HEIGHT;
+#endif
 }
 
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  s_menu_layer = menu_layer_create(GRect(0, 0, 144, LIST_MESSAGE_WINDOW_MENU_HEIGHT));
+  s_menu_layer = menu_layer_create(GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, LIST_MESSAGE_WINDOW_MENU_HEIGHT));
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
+  menu_layer_set_center_focused(s_menu_layer, PBL_IF_ROUND_ELSE(true, false));
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
       .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)get_num_rows_callback,
       .draw_row = (MenuLayerDrawRowCallback)draw_row_callback,
@@ -35,7 +44,7 @@ static void window_load(Window *window) {
   });
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
 
-  s_list_message_layer = text_layer_create(GRect(0, LIST_MESSAGE_WINDOW_MENU_HEIGHT, 144, 168 - LIST_MESSAGE_WINDOW_MENU_HEIGHT));
+  s_list_message_layer = text_layer_create(GRect(bounds.origin.x, LIST_MESSAGE_WINDOW_MENU_HEIGHT, bounds.size.w, bounds.size.h - LIST_MESSAGE_WINDOW_MENU_HEIGHT));
   text_layer_set_text_alignment(s_list_message_layer, GTextAlignmentCenter);
   text_layer_set_text(s_list_message_layer, LIST_MESSAGE_WINDOW_HINT_TEXT);
   layer_add_child(window_layer, text_layer_get_layer(s_list_message_layer));
