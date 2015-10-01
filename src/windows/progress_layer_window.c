@@ -19,12 +19,15 @@ static void progress_callback(void *context) {
 }
 
 static void window_load(Window *window) {
-  s_progress_layer = progress_layer_create(GRect(32, 80, 80, 6));
+  Layer *window_layer = window_get_root_layer(window);
+  GRect bounds = layer_get_bounds(window_layer);
+
+  s_progress_layer = progress_layer_create(GRect((bounds.size.w - PROGRESS_LAYER_WINDOW_WIDTH) / 2, 80, PROGRESS_LAYER_WINDOW_WIDTH, 6));
   progress_layer_set_progress(s_progress_layer, 0);
   progress_layer_set_corner_radius(s_progress_layer, 2);
   progress_layer_set_foreground_color(s_progress_layer, GColorWhite);
-  progress_layer_set_background_color(s_progress_layer, COLOR_FALLBACK(GColorDarkGray, GColorBlack));
-  layer_add_child(window_get_root_layer(window), s_progress_layer);  
+  progress_layer_set_background_color(s_progress_layer, GColorBlack);
+  layer_add_child(window_layer, s_progress_layer);  
 }
 
 static void window_unload(Window *window) {
