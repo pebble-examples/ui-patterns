@@ -49,14 +49,12 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
   }
 }
 
-static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
 #ifdef PBL_ROUND
+static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
   return menu_layer_is_index_selected(menu_layer, cell_index) ? 
     MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_SHORT_CELL_HEIGHT;
-#else
-  return 44;
-#endif
 }
+#endif
 
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
   if(cell_index->row == CHECKBOX_WINDOW_NUM_ROWS) {
@@ -82,11 +80,12 @@ static void window_load(Window *window) {
 
   s_menu_layer = menu_layer_create(bounds);
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
-  menu_layer_set_center_focused(s_menu_layer, PBL_IF_ROUND_ELSE(true, false));
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
       .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)get_num_rows_callback,
       .draw_row = (MenuLayerDrawRowCallback)draw_row_callback,
+#ifdef PBL_ROUND
       .get_cell_height = (MenuLayerGetCellHeightCallback)get_cell_height_callback,
+#endif  // Else use default of 44
       .select_click = (MenuLayerSelectCallback)select_callback,
   });
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));

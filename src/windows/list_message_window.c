@@ -33,7 +33,6 @@ static void window_load(Window *window) {
 
   s_menu_layer = menu_layer_create(GRect(bounds.origin.x, bounds.origin.y, bounds.size.w, LIST_MESSAGE_WINDOW_MENU_HEIGHT));
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
-  menu_layer_set_center_focused(s_menu_layer, PBL_IF_ROUND_ELSE(true, false));
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
       .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)get_num_rows_callback,
       .draw_row = (MenuLayerDrawRowCallback)draw_row_callback,
