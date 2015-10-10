@@ -4,9 +4,6 @@
 
 #include "list_message_window.h"
 
-#include "../values.h"
-#include "../util.h"
-
 static Window *s_main_window;
 static MenuLayer *s_menu_layer;
 static TextLayer *s_list_message_layer;
@@ -23,8 +20,8 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
 
 static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
 #ifdef PBL_ROUND
-  return menu_layer_menu_index_selected(menu_layer, cell_index) ? 
-    FOCUSED_TALL_CELL_HEIGHT : UNFOCUSED_TALL_CELL_HEIGHT;
+  return menu_layer_is_index_selected(menu_layer, cell_index) ? 
+    MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_SHORT_CELL_HEIGHT;
 #else
   return LIST_MESSAGE_WINDOW_CELL_HEIGHT;
 #endif
