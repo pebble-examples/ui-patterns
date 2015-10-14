@@ -2,8 +2,6 @@
 #include "pin_window.h"
 #include "../layers/selection_layer.h"
 
-#define PIN_WINDOW_SIZE GSize(128, 34)
-
 static char* selection_handle_get_text(int index, void *context) {
   PinWindow *pin_window = (PinWindow*)context;
   snprintf(
@@ -22,7 +20,7 @@ static void selection_handle_complete(void *context) {
 static void selection_handle_inc(int index, uint8_t clicks, void *context) {
   PinWindow *pin_window = (PinWindow*)context;
   pin_window->pin.digits[index]++;
-  if(pin_window->pin.digits[index] > MAX_VALUE) {
+  if(pin_window->pin.digits[index] > PIN_WINDOW_MAX_VALUE) {
     pin_window->pin.digits[index] = 0;
   }
 }
@@ -31,7 +29,7 @@ static void selection_handle_dec(int index, uint8_t clicks, void *context) {
   PinWindow *pin_window = (PinWindow*)context;
   pin_window->pin.digits[index]--;
   if(pin_window->pin.digits[index] < 0) {
-    pin_window->pin.digits[index] = MAX_VALUE;
+    pin_window->pin.digits[index] = PIN_WINDOW_MAX_VALUE;
   }
 }
 
@@ -42,7 +40,7 @@ PinWindow* pin_window_create(PinWindowCallbacks callbacks) {
     pin_window->callbacks = callbacks;
     if (pin_window->window) {
       pin_window->field_selection = 0;
-      for(int i = 0; i < NUM_CELLS; i++) {
+      for(int i = 0; i < PIN_WINDOW_NUM_CELLS; i++) {
         pin_window->pin.digits[i] = 0;
       }
       
@@ -51,22 +49,27 @@ PinWindow* pin_window_create(PinWindowCallbacks callbacks) {
       GRect bounds = layer_get_bounds(window_layer);
       
       // Main TextLayer
-      pin_window->main_text = text_layer_create(GRect(bounds.origin.x, 30, bounds.size.w, 40));
+      const GEdgeInsets main_text_insets = {.top = 30};
+      pin_window->main_text = text_layer_create(grect_inset(bounds, main_text_insets));
       text_layer_set_text(pin_window->main_text, "PIN Required");
       text_layer_set_font(pin_window->main_text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
       text_layer_set_text_alignment(pin_window->main_text, GTextAlignmentCenter);
       layer_add_child(window_layer, text_layer_get_layer(pin_window->main_text));
       
       // Sub TextLayer
-      pin_window->sub_text = text_layer_create(GRect(bounds.origin.x + 10, 125, bounds.size.w - 20, 40));
+      const GEdgeInsets sub_text_insets = {.top = 115, .right = 5, .bottom = 10, .left = 5};
+      pin_window->sub_text = text_layer_create(grect_inset(bounds, sub_text_insets));
       text_layer_set_text(pin_window->sub_text, "Enter your PIN to continue");
       text_layer_set_text_alignment(pin_window->sub_text, GTextAlignmentCenter);
       text_layer_set_font(pin_window->sub_text, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
       layer_add_child(window_layer, text_layer_get_layer(pin_window->sub_text));
       
       // Create selection layer
-      pin_window->selection = selection_layer_create(GRect((bounds.size.w - PIN_WINDOW_SIZE.w) / 2, 75, PIN_WINDOW_SIZE.w, PIN_WINDOW_SIZE.h), NUM_CELLS);
-      for (int i = 0; i < NUM_CELLS; i++) {
+      const GEdgeInsets selection_insets = GEdgeInsets(
+        (bounds.size.h - PIN_WINDOW_SIZE.h) / 2, 
+        (bounds.size.w - PIN_WINDOW_SIZE.w) / 2);
+      pin_window->selection = selection_layer_create(grect_inset(bounds, selection_insets), PIN_WINDOW_NUM_CELLS);
+      for (int i = 0; i < PIN_WINDOW_NUM_CELLS; i++) {
         selection_layer_set_cell_width(pin_window->selection, i, 40);
       }
       selection_layer_set_cell_padding(pin_window->selection, 4);

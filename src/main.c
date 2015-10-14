@@ -20,7 +20,7 @@ static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_in
   return NUM_WINDOWS;
 }
 
-static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *context) {
+static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *context) {
   switch(cell_index->row) {
     case 0:
       menu_cell_basic_draw(ctx, cell_layer, "Checkbox List", NULL, NULL);
@@ -57,7 +57,7 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
   }
 }
 
-#ifdef PBL_ROUND
+#ifdef PBL_SDK_3  // 2.x should use default 44px height
 static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
   return menu_layer_is_index_selected(menu_layer, cell_index) ? 
     MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_TALL_CELL_HEIGHT;;
@@ -119,12 +119,10 @@ static void window_load(Window *window) {
   menu_layer_set_normal_colors(s_menu_layer, GColorBlack, GColorWhite);
   menu_layer_set_highlight_colors(s_menu_layer, GColorRed, GColorWhite);
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
-      .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)get_num_rows_callback,
-      .draw_row = (MenuLayerDrawRowCallback)draw_row_callback,
-#ifdef PBL_ROUND
-      .get_cell_height = (MenuLayerGetCellHeightCallback)get_cell_height_callback,
-#endif
-      .select_click = (MenuLayerSelectCallback)select_callback,
+      .get_num_rows = get_num_rows_callback,
+      .draw_row = draw_row_callback,
+      .get_cell_height = PBL_IF_ROUND_ELSE(get_cell_height_callback, NULL),
+      .select_click = select_callback,
   });
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
 }

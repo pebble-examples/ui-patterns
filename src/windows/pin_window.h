@@ -2,11 +2,12 @@
 
 #include <pebble.h>
 
-#define NUM_CELLS 3
-#define MAX_VALUE 9
+#define PIN_WINDOW_NUM_CELLS 3
+#define PIN_WINDOW_MAX_VALUE 9
+#define PIN_WINDOW_SIZE GSize(128, 34)
 
 typedef struct {
-  int digits[NUM_CELLS];
+  int digits[PIN_WINDOW_NUM_CELLS];
 } PIN;
 
 typedef void (*PinWindowComplete)(PIN pin, void *context);
@@ -24,7 +25,7 @@ typedef struct {
   PinWindowCallbacks callbacks;
 
   PIN pin;
-  char field_buffs[NUM_CELLS][2];
+  char field_buffs[PIN_WINDOW_NUM_CELLS][2];
   int8_t field_selection;
 } PinWindow;
 
