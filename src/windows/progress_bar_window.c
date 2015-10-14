@@ -38,7 +38,6 @@ static void window_appear(Window *window) {
 
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
-  GRect bounds = layer_get_bounds(window_layer);
 
   s_status_bar = status_bar_layer_create();
   status_bar_layer_set_separator_mode(s_status_bar, StatusBarLayerSeparatorModeDotted);

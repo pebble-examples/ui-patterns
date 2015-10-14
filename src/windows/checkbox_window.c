@@ -47,7 +47,7 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
   }
 }
 
-#ifdef PBL_SDK_3 // 2.x should use default 44px height
+#ifdef PBL_ROUND // Rectangular displays will use the default cell height
 static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
   return menu_layer_is_index_selected(menu_layer, cell_index) ? 
     MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_TALL_CELL_HEIGHT;
