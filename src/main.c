@@ -116,7 +116,6 @@ static void window_load(Window *window) {
 
   s_menu_layer = menu_layer_create(bounds);
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
-  menu_layer_set_center_focused(s_menu_layer, PBL_IF_ROUND_ELSE(true, false));
   menu_layer_set_normal_colors(s_menu_layer, GColorBlack, GColorWhite);
   menu_layer_set_highlight_colors(s_menu_layer, GColorRed, GColorWhite);
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {

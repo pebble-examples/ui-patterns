@@ -21,7 +21,7 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
 static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
 #ifdef PBL_ROUND
   return menu_layer_is_index_selected(menu_layer, cell_index) ? 
-    MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_SHORT_CELL_HEIGHT;
+    MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_TALL_CELL_HEIGHT;
 #else
   return LIST_MESSAGE_WINDOW_CELL_HEIGHT;
 #endif
@@ -40,7 +40,8 @@ static void window_load(Window *window) {
   });
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
 
-  s_list_message_layer = text_layer_create(GRect(bounds.origin.x, LIST_MESSAGE_WINDOW_MENU_HEIGHT, bounds.size.w, bounds.size.h - LIST_MESSAGE_WINDOW_MENU_HEIGHT));
+  const int inset_margin = 35;
+  s_list_message_layer = text_layer_create(grect_inset(bounds, GEdgeInsets(4 * inset_margin, 0, 0, 0)));
   text_layer_set_text_alignment(s_list_message_layer, GTextAlignmentCenter);
   text_layer_set_text(s_list_message_layer, LIST_MESSAGE_WINDOW_HINT_TEXT);
   layer_add_child(window_layer, text_layer_get_layer(s_list_message_layer));
