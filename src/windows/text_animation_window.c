@@ -57,7 +57,8 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  s_text_layer = text_layer_create(GRect(0, (bounds.size.h / 2) - 24, bounds.size.w, bounds.size.h));
+  const GEdgeInsets text_insets = {.top = (bounds.size.h / 2) - 24};
+  s_text_layer = text_layer_create(grect_inset(bounds, text_insets));
   text_layer_set_text(s_text_layer, "Example text.");
   text_layer_set_text_color(s_text_layer, GColorWhite);
   text_layer_set_background_color(s_text_layer, GColorClear);
