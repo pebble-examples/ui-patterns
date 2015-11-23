@@ -2,6 +2,8 @@
 
 #include <pebble.h>
 
+#include "../util/compat.h"
+
 #define PIN_WINDOW_NUM_CELLS 3
 #define PIN_WINDOW_MAX_VALUE 9
 #define PIN_WINDOW_SIZE GSize(128, 34)
