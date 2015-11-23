@@ -27,7 +27,7 @@ static void window_load(Window *window) {
   progress_layer_set_corner_radius(s_progress_layer, 2);
   progress_layer_set_foreground_color(s_progress_layer, GColorWhite);
   progress_layer_set_background_color(s_progress_layer, GColorBlack);
-  layer_add_child(window_layer, s_progress_layer);  
+  layer_add_child(window_layer, s_progress_layer);
 }
 
 static void window_unload(Window *window) {
@@ -52,7 +52,7 @@ static void window_disappear(Window *window) {
 void progress_layer_window_push() {
   if(!s_window) {
     s_window = window_create();
-    window_set_background_color(s_window, COLOR_FALLBACK(GColorLightGray, GColorWhite));
+    window_set_background_color(s_window, PBL_IF_COLOR_ELSE(GColorLightGray, GColorWhite));
     window_set_window_handlers(s_window, (WindowHandlers) {
       .load = window_load,
       .appear = window_appear,

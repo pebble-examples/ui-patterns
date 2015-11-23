@@ -44,9 +44,9 @@ static void window_load(Window *window) {
   status_bar_layer_set_colors(s_status_bar, GColorClear, GColorWhite);
   layer_add_child(window_layer, status_bar_layer_get_layer(s_status_bar));
 
-  s_progress_bar = layer_create((GRect){ 
-    .origin = GPoint(0, STATUS_BAR_LAYER_HEIGHT - 2), 
-    .size = PROGRESS_BAR_WINDOW_SIZE 
+  s_progress_bar = layer_create((GRect){
+    .origin = GPoint(0, STATUS_BAR_LAYER_HEIGHT - 2),
+    .size = PROGRESS_BAR_WINDOW_SIZE
   });
   layer_set_update_proc(s_progress_bar, progress_bar_proc);
   layer_add_child(window_layer, s_progress_bar);
@@ -69,7 +69,7 @@ static void window_disappear(Window *window) {
 void progress_bar_window_push() {
   if(!s_window) {
     s_window = window_create();
-    window_set_background_color(s_window, GColorDarkCandyAppleRed);
+    window_set_background_color(s_window, PBL_IF_COLOR_ELSE(GColorDarkCandyAppleRed, GColorBlack));
     window_set_window_handlers(s_window, (WindowHandlers) {
       .appear = window_appear,
       .load = window_load,
