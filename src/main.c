@@ -37,7 +37,7 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
     case 4:
       menu_cell_basic_draw(ctx, cell_layer, "Radio Button", NULL, NULL);
       break;
-    case 5: 
+    case 5:
       menu_cell_basic_draw(ctx, cell_layer, "PIN Entry", NULL, NULL);
       break;
     case 6:
@@ -59,9 +59,9 @@ static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex 
 
 static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
   return PBL_IF_ROUND_ELSE(
-    menu_layer_is_index_selected(menu_layer, cell_index) ? 
+    menu_layer_is_index_selected(menu_layer, cell_index) ?
       MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_TALL_CELL_HEIGHT,
-    44);
+    CHECKBOX_WINDOW_CELL_HEIGHT);
 }
 
 static void pin_complete_callback(PIN pin, void *context) {
@@ -121,7 +121,7 @@ static void window_load(Window *window) {
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
       .get_num_rows = get_num_rows_callback,
       .draw_row = draw_row_callback,
-      .get_cell_height = PBL_IF_ROUND_ELSE(get_cell_height_callback, NULL),
+      .get_cell_height = get_cell_height_callback,
       .select_click = select_callback,
   });
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
