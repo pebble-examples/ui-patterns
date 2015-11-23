@@ -16,14 +16,15 @@ static void window_load(Window *window) {
   GRect bounds = layer_get_bounds(window_layer);
 
   s_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CONFIRM);
-  GRect bitmap_bounds = gbitmap_get_bounds(s_icon_bitmap);
 
-  s_icon_layer = bitmap_layer_create(GRect((bounds.size.w / 2) - (bitmap_bounds.size.w / 2) - (ACTION_BAR_WIDTH / 2), 10, bitmap_bounds.size.w, bitmap_bounds.size.h));
+  const GEdgeInsets icon_insets = {.top = 7, .right = 28, .bottom = 56, .left = 14};
+  s_icon_layer = bitmap_layer_create(grect_inset(bounds, icon_insets));
   bitmap_layer_set_bitmap(s_icon_layer, s_icon_bitmap);
   bitmap_layer_set_compositing_mode(s_icon_layer, GCompOpSet);
   layer_add_child(window_layer, bitmap_layer_get_layer(s_icon_layer));
 
-  s_label_layer = text_layer_create(GRect(10, 10 + bitmap_bounds.size.h + 5, 124 - ACTION_BAR_WIDTH, bounds.size.h - (10 + bitmap_bounds.size.h + 15)));
+  const GEdgeInsets label_insets = {.top = 112, .right = ACTION_BAR_WIDTH, .left = ACTION_BAR_WIDTH / 2};
+  s_label_layer = text_layer_create(grect_inset(bounds, label_insets));      
   text_layer_set_text(s_label_layer, DIALOG_CHOICE_WINDOW_MESSAGE);
   text_layer_set_background_color(s_label_layer, GColorClear);
   text_layer_set_text_alignment(s_label_layer, GTextAlignmentCenter);

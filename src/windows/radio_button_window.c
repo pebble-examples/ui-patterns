@@ -13,7 +13,7 @@ static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_in
   return RADIO_BUTTON_WINDOW_NUM_ROWS + 1;
 }
 
-static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *context) {
+static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *context) {
   if(cell_index->row == RADIO_BUTTON_WINDOW_NUM_ROWS) {
     // This is the submit item
     menu_cell_basic_draw(ctx, cell_layer, "Submit", NULL, NULL);
@@ -43,14 +43,18 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
   }
 }
 
-static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-  return RADIO_BUTTON_WINDOW_CELL_HEIGHT;
+static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
+  return PBL_IF_ROUND_ELSE(
+    menu_layer_is_index_selected(menu_layer, cell_index) ? 
+      MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_TALL_CELL_HEIGHT,
+    44);
 }
 
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
   if(cell_index->row == RADIO_BUTTON_WINDOW_NUM_ROWS) {
     // Do something with user choice
     APP_LOG(APP_LOG_LEVEL_INFO, "Submitted choice %d", s_current_selection);
+    window_stack_pop(true);
   } else {
     // Change selection
     s_current_selection = cell_index->row;
@@ -65,10 +69,10 @@ static void window_load(Window *window) {
   s_menu_layer = menu_layer_create(bounds);
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
-      .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)get_num_rows_callback,
-      .draw_row = (MenuLayerDrawRowCallback)draw_row_callback,
-      .get_cell_height = (MenuLayerGetCellHeightCallback)get_cell_height_callback,
-      .select_click = (MenuLayerSelectCallback)select_callback,
+      .get_num_rows = get_num_rows_callback,
+      .draw_row = draw_row_callback,
+      .get_cell_height = get_cell_height_callback,
+      .select_click = select_callback,
   });
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
 }

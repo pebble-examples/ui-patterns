@@ -14,8 +14,7 @@ static uint16_t get_num_rows_callback(MenuLayer *menu_layer, uint16_t section_in
   return CHECKBOX_WINDOW_NUM_ROWS + 1;
 }
 
-static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_index, void *context) {
-
+static void draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *context) {
   if(cell_index->row == CHECKBOX_WINDOW_NUM_ROWS) {
     // Submit item
     menu_cell_basic_draw(ctx, cell_layer, "Submit", NULL, NULL);
@@ -34,14 +33,12 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
 
     GRect bounds = layer_get_bounds(cell_layer);
     GRect bitmap_bounds = gbitmap_get_bounds(ptr);
-  
+
     // Draw checkbox
     GRect r = GRect(
-      bounds.size.w - (2 * CHECKBOX_WINDOW_BOX_SIZE), 
-      (bounds.size.h / 2) - (CHECKBOX_WINDOW_BOX_SIZE / 2), 
-      CHECKBOX_WINDOW_BOX_SIZE, 
-      CHECKBOX_WINDOW_BOX_SIZE
-    );
+      bounds.size.w - (2 * CHECKBOX_WINDOW_BOX_SIZE),
+      (bounds.size.h / 2) - (CHECKBOX_WINDOW_BOX_SIZE / 2),
+      CHECKBOX_WINDOW_BOX_SIZE, CHECKBOX_WINDOW_BOX_SIZE);
     graphics_draw_rect(ctx, r);
     if(s_selections[cell_index->row]) {
       graphics_context_set_compositing_mode(ctx, GCompOpSet);
@@ -50,8 +47,11 @@ static void draw_row_callback(GContext *ctx, Layer *cell_layer, MenuIndex *cell_
   }
 }
 
-static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-  return CHECKBOX_WINDOW_CELL_HEIGHT;
+static int16_t get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *context) {
+  return PBL_IF_ROUND_ELSE(
+    menu_layer_is_index_selected(menu_layer, cell_index) ?
+      MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_TALL_CELL_HEIGHT,
+    CHECKBOX_WINDOW_CELL_HEIGHT);
 }
 
 static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
@@ -60,6 +60,7 @@ static void select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index,
     for(int i = 0; i < CHECKBOX_WINDOW_NUM_ROWS; i++) {
       APP_LOG(APP_LOG_LEVEL_INFO, "Option %d was %s", i, (s_selections[i] ? "selected" : "not selected"));
     }
+    window_stack_pop(true);
   } else {
     // Check/uncheck
     int row = cell_index->row;
@@ -78,10 +79,10 @@ static void window_load(Window *window) {
   s_menu_layer = menu_layer_create(bounds);
   menu_layer_set_click_config_onto_window(s_menu_layer, window);
   menu_layer_set_callbacks(s_menu_layer, NULL, (MenuLayerCallbacks) {
-      .get_num_rows = (MenuLayerGetNumberOfRowsInSectionsCallback)get_num_rows_callback,
-      .draw_row = (MenuLayerDrawRowCallback)draw_row_callback,
-      .get_cell_height = (MenuLayerGetCellHeightCallback)get_cell_height_callback,
-      .select_click = (MenuLayerSelectCallback)select_callback,
+      .get_num_rows = get_num_rows_callback,
+      .draw_row = draw_row_callback,
+      .get_cell_height = get_cell_height_callback,
+      .select_click = select_callback,
   });
   layer_add_child(window_layer, menu_layer_get_layer(s_menu_layer));
 }

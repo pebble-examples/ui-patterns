@@ -17,16 +17,16 @@ static void window_load(Window *window) {
   s_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CONFIG_REQUIRED);
   GRect bitmap_bounds = gbitmap_get_bounds(s_icon_bitmap);
 
-  s_icon_layer = bitmap_layer_create(GRect(
-    (bounds.size.w - bitmap_bounds.size.w) / 2, 
-    ((bounds.size.h - bitmap_bounds.size.h) / 2) - 10, 
-    bitmap_bounds.size.w, bitmap_bounds.size.h)
-  );
+  const GEdgeInsets icon_insets = GEdgeInsets(
+    (bounds.size.h - bitmap_bounds.size.h) / 2,
+    (bounds.size.w - bitmap_bounds.size.w) / 2);
+  s_icon_layer = bitmap_layer_create(grect_inset(bounds, icon_insets));
   bitmap_layer_set_bitmap(s_icon_layer, s_icon_bitmap);
   bitmap_layer_set_compositing_mode(s_icon_layer, GCompOpSet);
   layer_add_child(window_layer, bitmap_layer_get_layer(s_icon_layer));
 
-  s_title_layer = text_layer_create(GRect(0, 5, bounds.size.w, 60));
+  const GEdgeInsets title_insets = {.top = 10};
+  s_title_layer = text_layer_create(grect_inset(bounds, title_insets));
   text_layer_set_text(s_title_layer, DIALOG_CONFIG_WINDOW_APP_NAME);
   text_layer_set_text_color(s_title_layer, GColorWhite);
   text_layer_set_background_color(s_title_layer, GColorClear);
@@ -34,7 +34,8 @@ static void window_load(Window *window) {
   text_layer_set_font(s_title_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   layer_add_child(window_layer, text_layer_get_layer(s_title_layer));
 
-  s_body_layer = text_layer_create(GRect(5, 120, bounds.size.w - 10, 60));
+  const GEdgeInsets body_insets = {.top = 125, .right = 5, .left = 5};
+  s_body_layer = text_layer_create(grect_inset(bounds, body_insets));
   text_layer_set_text(s_body_layer, DIALOG_CONFIG_WINDOW_MESSAGE);
   text_layer_set_text_color(s_body_layer, GColorWhite);
   text_layer_set_background_color(s_body_layer, GColorClear);
