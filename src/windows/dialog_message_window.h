@@ -2,8 +2,6 @@
 
 #include <pebble.h>
 
-#include "../util/compat.h"
-
 #define DIALOG_MESSAGE_WINDOW_MESSAGE  "Battery is low! Connect the charger."
 #define DIALOG_MESSAGE_WINDOW_MARGIN   10
 
