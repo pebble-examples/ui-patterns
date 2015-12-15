@@ -17,7 +17,7 @@ static void anim_stopped_handler(Animation *animation, bool finished, void *cont
 }
 
 static void background_update_proc(Layer *layer, GContext *ctx) {
-  graphics_context_set_fill_color(ctx, GColorYellow);
+  graphics_context_set_fill_color(ctx, PBL_IF_COLOR_ELSE(GColorYellow, GColorWhite));
   graphics_fill_rect(ctx, layer_get_bounds(layer), 0, 0);
 }
 
@@ -91,7 +91,7 @@ static void window_appear(Window *window) {
 
   start = layer_get_frame(label_layer);
   const GEdgeInsets finish_insets = {
-    .top = DIALOG_MESSAGE_WINDOW_MARGIN + bitmap_bounds.size.h + 5 /* small adjustment */, 
+    .top = DIALOG_MESSAGE_WINDOW_MARGIN + bitmap_bounds.size.h + 5 /* small adjustment */,
     .right = DIALOG_MESSAGE_WINDOW_MARGIN, .left = DIALOG_MESSAGE_WINDOW_MARGIN};
   finish = grect_inset(bounds, finish_insets);
   Animation *label_anim = (Animation*)property_animation_create_layer_frame(label_layer, &start, &finish);

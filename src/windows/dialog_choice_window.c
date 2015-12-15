@@ -24,7 +24,7 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, bitmap_layer_get_layer(s_icon_layer));
 
   const GEdgeInsets label_insets = {.top = 112, .right = ACTION_BAR_WIDTH, .left = ACTION_BAR_WIDTH / 2};
-  s_label_layer = text_layer_create(grect_inset(bounds, label_insets));      
+  s_label_layer = text_layer_create(grect_inset(bounds, label_insets));
   text_layer_set_text(s_label_layer, DIALOG_CHOICE_WINDOW_MESSAGE);
   text_layer_set_background_color(s_label_layer, GColorClear);
   text_layer_set_text_alignment(s_label_layer, GTextAlignmentCenter);
@@ -45,7 +45,7 @@ static void window_unload(Window *window) {
   action_bar_layer_destroy(s_action_bar_layer);
   bitmap_layer_destroy(s_icon_layer);
 
-  gbitmap_destroy(s_icon_bitmap); 
+  gbitmap_destroy(s_icon_bitmap);
   gbitmap_destroy(s_tick_bitmap);
   gbitmap_destroy(s_cross_bitmap);
 
@@ -56,7 +56,7 @@ static void window_unload(Window *window) {
 void dialog_choice_window_push() {
   if(!s_main_window) {
     s_main_window = window_create();
-    window_set_background_color(s_main_window, GColorJaegerGreen);
+    window_set_background_color(s_main_window, PBL_IF_COLOR_ELSE(GColorJaegerGreen, GColorWhite));
     window_set_window_handlers(s_main_window, (WindowHandlers) {
         .load = window_load,
         .unload = window_unload,
